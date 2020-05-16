@@ -1,0 +1,54 @@
+package com.fuy.book.utils;
+
+import com.alibaba.druid.pool.DruidDataSource;
+import com.alibaba.druid.pool.DruidDataSourceFactory;
+
+import java.io.InputStream;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.Properties;
+
+public class JdbcUtils {
+
+    //创建数据库连接池的对象
+    private static DruidDataSource dataSource;
+    //静态初始化
+    static {
+        try {
+            Properties properties = new Properties();
+            //读取配置文件的流
+            InputStream inputStream = JdbcUtils.class.getClassLoader().getResourceAsStream("jdbc.properties");
+            //从流中加载s数据
+            properties.load(inputStream );
+            //创建数据库连接池
+            dataSource = (DruidDataSource) DruidDataSourceFactory.createDataSource(properties);
+
+            System.out.println(dataSource.getConnection());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+    }
+    //获取熟数据库连接池中的连接
+    public static Connection getConnection(){
+
+        Connection connection = null;
+        try {
+            connection = dataSource.getConnection();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return connection;
+
+    }
+    //关闭连接,放回数据库连接池
+    public static void close(Connection connection){
+        if(connection!=null){
+            try {
+                connection.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+}
