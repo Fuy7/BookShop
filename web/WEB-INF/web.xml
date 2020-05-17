@@ -54,5 +54,14 @@
         <url-pattern>/carServlet</url-pattern>
     </servlet-mapping>
 
+    <!--orderServlet-->
+    <servlet>
+        <servlet-name>orderServlet</servlet-name>
+        <servlet-class>com.fuy.book.servlet.OrderServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>orderServlet</servlet-name>
+        <url-pattern>/orderServlet</url-pattern>
+    </servlet-mapping>
 
 </web-app>

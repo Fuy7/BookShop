@@ -9,13 +9,13 @@ public class UserServiceImplTest {
     UserServiceImpl userService = new UserServiceImpl();
     @Test
     public void regisUser() {
-        User user = new User("夏明","123","123@QQ.com");
+        User user = new User(null,"夏明","123","123@QQ.com");
         userService.regisUser(user);
     }
 
     @Test
     public void login() {
-        User user = new User("夏明","123","123@QQ.com");
+        User user = new User(null,"夏明","123","123@QQ.com");
         System.out.println(userService.login(user));
 
     }

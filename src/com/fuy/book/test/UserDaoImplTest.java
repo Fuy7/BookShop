@@ -16,14 +16,14 @@ public class UserDaoImplTest {
     @Test
     public void queryUserByNameAndPwd() {
         UserDaoImpl dao = new UserDaoImpl();
-        User user = dao.queryUserByNameAndPwd("fuy", "123");
+        User user = dao.queryUserByNameAndPwd("admin", "admin");
         System.out.println(user);
     }
 
     @Test
     public void saveUser() {
         UserDaoImpl dao = new UserDaoImpl();
-        User user = new User("fuy","123","fuy@QQ.com");
+        User user = new User(null,"fuy","123","fuy@QQ.com");
         int i = dao.saveUser(user);
         System.out.println(i);
     }

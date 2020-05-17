@@ -24,12 +24,10 @@ public class UserServlet extends BaseServlet {
     protected void login(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         //获取请求信息
         String username = req.getParameter("username");
-        String password = req.getParameter("password");
         System.out.println(username);
-
         user = WebUtils.copyParamToBean(req.getParameterMap(), new User());
         //进行校验
-        User u = userService.login(this.user);
+        User u = userService.login(user);
         if(u==null){
             System.out.println("登录失败");
             req.setAttribute("msg","用户名或密码错误");
@@ -39,7 +37,7 @@ public class UserServlet extends BaseServlet {
         }else {
             //登录成功
             //将用户信息保存到session域中
-            req.getSession().setAttribute("user",user);
+            req.getSession().setAttribute("user",u);
             //请求转发
             req.getRequestDispatcher("/pages/user/login_success.jsp").forward(req,resp);
         }
@@ -86,7 +84,6 @@ public class UserServlet extends BaseServlet {
             else {
                 //进行注册
                 user = WebUtils.copyParamToBean(req.getParameterMap(), new User());
-                user = new User(username,password,email);
                 userService.regisUser(user);
                 req.getRequestDispatcher("/pages/user/regist_success.jsp").forward(req,resp);
 
