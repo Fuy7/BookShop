@@ -4,6 +4,7 @@ import com.fuy.book.entity.User;
 import com.fuy.book.service.UserService;
 import com.fuy.book.service.impl.UserServiceImpl;
 import com.fuy.book.utils.WebUtils;
+import com.google.gson.Gson;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -11,6 +12,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.lang.reflect.Method;
+import java.util.HashMap;
+import java.util.Map;
 
 import static com.google.code.kaptcha.Constants.KAPTCHA_SESSION_KEY;
 
@@ -98,6 +101,22 @@ public class UserServlet extends BaseServlet {
 
             req.getRequestDispatcher("/pages/user/regist.jsp").forward(req,resp);
         }
+
+    }
+    //ajax校验用户名
+    protected void ajaxGetName(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        //获取请求参数
+        String username = req.getParameter("username");
+        //调用service校验用户名是否存在
+        boolean existsUser = userService.existsUser(username);
+        //将返回的结果封装为map集合
+        Map<String,Object> map = new HashMap<>();
+        map.put("existsUser",existsUser);
+        //将集合转化为JSON,map类型转换为JSON更加合适
+        Gson gson = new Gson();
+        String json = gson.toJson(map);
+        //响应给ajax请求
+        resp.getWriter().write(json);
 
     }
 }

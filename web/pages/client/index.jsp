@@ -24,15 +24,26 @@
       //使用js提供的location对象的.href属性 传入参数(修改地址信息进行跳转)
       location.href = "${pageContext.getAttribute("basePath")}manager/bookServlet?action=page&pageNo="+pageNo+"&pageSize=4"
     })
+
     //添加到购物车按钮
     $("button.addToCar").click(function () {
       //获取商品图书编号
       var bookID = $(this).attr("bookId");
       //使用js提供的location对象的.href属性 传入参数(修改地址信息进行跳转)
-      location.href = "${pageContext.getAttribute("basePath")}carServlet?action=addToCar&id="+bookID
+      //location.href = "${pageContext.getAttribute("basePath")}carServlet?action=addToCar&id="+bookID
+      //使用ajax请求
+      $.ajax({
+        url:"http://localhost:8080/bookshop/carServlet",
+        data:{action:"ajaxAddToCar",id:bookID},
+        type:"GET",
+        success:function (data) {   //回调函数,响应的数据封装到data
+          $("#carTotalCount").text("您的购物车中有 " + data.totalCount + " 件商品");
+          $("#carLastName").text(data.lastCarItemName);
+        },
+        dataType : "json"       //指定返回的数据类型
+       })
+      })
     })
-  })
-
 </script>
 <body>
 <div id="header">
@@ -66,18 +77,18 @@
 
     <c:if test="${empty sessionScope.car}">
       <div style="text-align: center">
-        <span> </span>
+        <span id="carTotalCount"> </span>
         <div>
-          <span style="color: red">您的购物车为空</span>
+          <span id="carLastName" style="color: red">您的购物车为空</span>
         </div>
       </div>
     </c:if>
 
     <c:if test="${not empty sessionScope.car}">
       <div style="text-align: center">
-        <span>您的购物车中有${sessionScope.car.totalCount}件商品</span>
+        <span id="carTotalCount">您的购物车中有${sessionScope.car.totalCount}件商品</span>
         <div>
-          您刚刚将<span style="color: red">${sessionScope.carItem.name}</span>加入到了购物车中
+          您刚刚将<span id="carLastName" style="color: red">${sessionScope.cartLastName}</span>加入到了购物车中
         </div>
       </div>
     </c:if>

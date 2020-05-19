@@ -4,6 +4,7 @@ import com.fuy.book.entity.Car;
 import com.fuy.book.entity.User;
 import com.fuy.book.service.OrderService;
 import com.fuy.book.service.impl.OrderServiceImpl;
+import com.fuy.book.utils.JdbcUtils;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -26,8 +27,8 @@ public class OrderServlet extends BaseServlet {
             req.getRequestDispatcher("/pages/user/login.jsp").forward(req,resp);
             return;
         }
-        //调用service生成订单
-        String orderId = orderService.createOrder(car, user.getId());
+
+        String orderId =  orderService.createOrder(car, user.getId());
         //将订单号存储到session域中
         req.getSession().setAttribute("orderId",orderId);
         System.out.println(orderId);

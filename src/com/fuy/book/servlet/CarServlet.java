@@ -6,12 +6,15 @@ import com.fuy.book.entity.CarItem;
 import com.fuy.book.service.BookService;
 import com.fuy.book.service.impl.BookServiceImpl;
 import com.fuy.book.utils.WebUtils;
+import com.google.gson.Gson;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.util.HashMap;
+import java.util.Map;
 
 public class CarServlet extends BaseServlet {
 
@@ -88,5 +91,34 @@ public class CarServlet extends BaseServlet {
         car.updateCount(id,count);
         //回到购物车页面
         resp.sendRedirect(req.getHeader("Referer"));
+    }
+    //使用ajax将商品添加到购物车
+    protected void ajaxAddToCar(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        //获取商品ID
+        Integer id = WebUtils.parseInt(req.getParameter("id"), 0);
+        //调用service,使用ID获取图书信息
+        Book book = bookService.getBookByID(id);
+        //将book对象封装为商品信息
+        CarItem carItem = new CarItem(book.getId(), book.getName(), 1, book.getPrice(), book.getPrice());
+        //创建购物车并存入到session中
+        Car car = (Car) req.getSession().getAttribute("car");
+        if(car==null){
+            //不存在购物车就创建一个
+            car = new Car();
+            req.getSession().setAttribute("car", car);
+        }
+        //向购物车中添加商品
+        car.addCarItem(carItem);
+        //将添加的商品信息添加到session域中
+        req.getSession().setAttribute("lastCarItem",carItem.getName());
+        //返回购物车总的商品数量和最后一个添加的商品名称
+        Map<String,Object> resultMap = new HashMap<>();
+        resultMap.put("totalCount",car.getTotalCount());
+        resultMap.put("lastCarItemName",carItem.getName());
+
+        //将resultMap转为JSON字符串
+        Gson gson = new Gson();
+        String json = gson.toJson(resultMap);
+        resp.getWriter().write(json);
     }
 }

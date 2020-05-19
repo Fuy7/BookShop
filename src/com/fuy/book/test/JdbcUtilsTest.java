@@ -12,7 +12,7 @@ public class JdbcUtilsTest {
         for (int i = 0; i < 50; i++) {
             Connection connection = JdbcUtils.getConnection();
             System.out.println(connection);
-            JdbcUtils.close(connection);
+            JdbcUtils.CommitAndClose();
         }
     }
 }

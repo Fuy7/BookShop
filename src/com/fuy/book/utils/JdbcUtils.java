@@ -12,6 +12,8 @@ public class JdbcUtils {
 
     //创建数据库连接池的对象
     private static DruidDataSource dataSource;
+    //创建ThreadLocal对象
+    private static ThreadLocal<Connection> conns = new ThreadLocal<Connection>();
     //静态初始化
     static {
         try {
@@ -31,24 +33,66 @@ public class JdbcUtils {
     }
     //获取熟数据库连接池中的连接
     public static Connection getConnection(){
-
-        Connection connection = null;
-        try {
-            connection = dataSource.getConnection();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return connection;
-
-    }
-    //关闭连接,放回数据库连接池
-    public static void close(Connection connection){
-        if(connection!=null){
+        //从ThreadLocal中获取
+        Connection connection = conns.get();
+        //未将连接放置ThreadLocal
+        if(connection == null){
             try {
-                connection.close();
-            } catch (SQLException e) {
+                //从连接池中获取出一个连接
+                connection = dataSource.getConnection();
+                //存储到ThreadLocal中
+                conns.set(connection);
+                //设置为手动管理事务
+                connection.setAutoCommit(false);
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         }
+        return connection;
     }
+
+    //提交事务并关闭连接
+    public static void CommitAndClose(){
+        //从ThreadLocal获取连接
+        Connection connection = conns.get();
+        //说明使用过连接
+        if(connection != null){
+            //提交事务
+            try {
+                connection.commit();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }finally {
+                try {
+                    connection.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        conns.remove();  //一定一定要手动关闭ThreadLocal,防止内存泄漏
+    }
+
+    //回滚事务并关闭连接
+    public static void rollbackAndClose(){
+        //从ThreadLocal获取连接
+        Connection connection = conns.get();
+        //说明使用过连接
+        if(connection != null){
+            //提交事务
+            try {
+                connection.rollback();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }finally {
+                try {
+                    connection.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        conns.remove();  //一定一定要手动关闭ThreadLocal,防止内存泄漏
+    }
+
 }

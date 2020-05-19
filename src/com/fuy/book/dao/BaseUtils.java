@@ -15,16 +15,14 @@ public abstract class BaseUtils {
     private QueryRunner queryRunner = new QueryRunner();
     //update()方法用来执行: Insert \Update \Delete语句
     public int update(String sql,Object ... args){
-
         Connection connection = JdbcUtils.getConnection();
         try {
             return  queryRunner.update(connection,sql,args);
         } catch (SQLException e) {
             e.printStackTrace();
-        }finally {
-            JdbcUtils.close(connection);
+            //捕获异常后需要向外抛出,以此判断是否回滚
+            throw new RuntimeException(e);
         }
-        return -1;
     }
     //查询一条数据
     //Class<T> type 指定返回的数据类型
@@ -33,12 +31,11 @@ public abstract class BaseUtils {
         Connection connection = JdbcUtils.getConnection();
         try {
             return queryRunner.query(connection,sql,new BeanHandler<T>(type),args);
-        } catch (SQLException e) {
+        }  catch (SQLException e) {
             e.printStackTrace();
-        }finally {
-            JdbcUtils.close(connection);
+            //捕获异常后需要向外抛出,以此判断是否回滚
+            throw new RuntimeException(e);
         }
-        return null;
     }
     //查询多条数据
     //Class<T> type 指定返回的数据类型
@@ -47,12 +44,11 @@ public abstract class BaseUtils {
         Connection connection = JdbcUtils.getConnection();
         try {
             return queryRunner.query(connection,sql,new BeanListHandler<T>(type),args);
-        } catch (SQLException e) {
+        }  catch (SQLException e) {
             e.printStackTrace();
-        }finally {
-            JdbcUtils.close(connection);
+            //捕获异常后需要向外抛出,以此判断是否回滚
+            throw new RuntimeException(e);
         }
-        return null;
     }
     //查询一行一列方法
     public Object queryForSingleValue(String sql,Object ... args){
@@ -60,11 +56,10 @@ public abstract class BaseUtils {
         Connection connection = JdbcUtils.getConnection();
         try {
             return queryRunner.query(connection,sql,new ScalarHandler(),args);
-        } catch (SQLException e) {
+        }  catch (SQLException e) {
             e.printStackTrace();
-        }finally {
-            JdbcUtils.close(connection);
+            //捕获异常后需要向外抛出,以此判断是否回滚
+            throw new RuntimeException(e);
         }
-        return null;
     }
 }

@@ -91,6 +91,24 @@
 			this.src = "${basePath}kaptcha.jpg?d=" + new Date();    //每次点击都重新发送请求来更新图片
 		});
 
+		//为输入用户名绑定失去焦点事件
+		$("#username").change(function () {
+			//发送ajax请求
+			$.ajax({
+				url:"http://localhost:8080/bookshop/userServlet",
+				data:{action:"ajaxGetName",username:$("#username").val()},
+				type:"GET",
+				success:function (data) {   //回调函数,响应的数据封装到data
+					//alert(" 服务器返回的数据是： " + data.existsUser);
+					if(data.existsUser){
+						$("span.errorMsg").text("用户名可用");
+					}else {
+
+					}
+				},
+				dataType : "json"       //指定返回的数据类型
+			})
+		})
 
 	})
 	

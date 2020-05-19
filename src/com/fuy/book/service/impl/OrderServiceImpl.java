@@ -7,11 +7,7 @@ import com.fuy.book.dao.impl.BookDaoImpl;
 import com.fuy.book.dao.impl.OrderDaoImpl;
 import com.fuy.book.dao.impl.OrderItemDaoImpl;
 import com.fuy.book.entity.*;
-
 import com.fuy.book.service.OrderService;
-
-import javax.servlet.FilterConfig;
-import javax.servlet.ServletException;
 import java.util.Date;
 import java.util.Map;
 
@@ -40,6 +36,7 @@ public class OrderServiceImpl implements OrderService {
                 OrderItem orderItem = new OrderItem(null,carItem.getName(),carItem.getCount(),carItem.getPrice(),carItem.getTotalPrice(),orderId);
                 //将订单项保存到订单中
                 itemDao.saveOrderItem(orderItem);
+                int j = 1/0;
                 //获取商品对应的图书
                 Book book = bookDao.getBookByID(carItem.getId());
                 //修改此书的库存
@@ -47,6 +44,7 @@ public class OrderServiceImpl implements OrderService {
                 //修改销量
                 book.setSales(book.getSales()+carItem.getCount());
                 bookDao.updataBook(book);
+
             }
             //清空购物车
             car.cleanCarItem();
@@ -56,5 +54,6 @@ public class OrderServiceImpl implements OrderService {
         //返回订单号
         return orderId;
     }
+
 
 }
